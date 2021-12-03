@@ -1,0 +1,100 @@
+﻿@page "/cuentas/crear"
+@using Examen_Desarrollo_BCP.Shared.Models
+@using System.Text.Json
+@inject HttpClient Http
+<div class="card m-3">
+    <h4 class="card-header">Crear Nueva Cuenta</h4>
+    <div class="card-body">
+        <EditForm Model="@nuevaCuenta" OnValidSubmit="@HandleValidSubmit" class="form-row form">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group my-3" >
+                <label>
+                    Numero de Cuenta
+                </label>
+                <InputText id="name" @bind-Value="nuevaCuenta.NRO_CUENTA" placeholder="Numero de cuenta" class="form-control"/>
+                <ValidationMessage For="@(() => nuevaCuenta.NRO_CUENTA)" />
+            </div>
+            <div class="form-group my-3">
+                <label>
+                    Nombre Completo
+                </label>
+                <InputText id="name" @bind-Value="nuevaCuenta.NOMBRE" placeholder="Nombre" class="form-control"/>
+                <ValidationMessage For="@(() => nuevaCuenta.NOMBRE)" />
+            </div>
+            <div class="form-group my-3">
+                <label>
+                    Tipo de Cuentaeda
+                </label>
+                <InputSelect  class="form-control selectpicker" @bind-Value="nuevaCuenta.TIPO" >
+                    <option>Seleccione una opcion</option>
+                    <option value="AHO">Cuenta de Ahorro</option>
+                    <option value="CTE">Cuenta Corriente</option>
+                </InputSelect >
+                <ValidationMessage For="@(() => nuevaCuenta.MONEDA)" />
+            </div>
+            <div class="form-group my-3">
+                <label>
+                    Moneda
+                </label>
+                <InputSelect  class="form-control selectpicker" @bind-Value="nuevaCuenta.MONEDA" >
+                    <option>Seleccione una opcion</option>
+                    @foreach (MonedaModel moneda in monedas)
+            {
+                <option value="@moneda.Codigo">@moneda.Nombre</option>
+            }
+                </InputSelect >
+                <ValidationMessage For="@(() => nuevaCuenta.MONEDA)" />
+            </div>
+            <button type="submit" class="btn btn-primary">Crear Cuenta</button>
+        </EditForm>
+        @if (created)
+        {
+            <div class="alert alert-primary my-3" role="alert">
+                Creado.
+            </div>
+        }
+        @if (Exception)
+        {
+            <div class="alert alert-warning my-3" role="alert">
+                Datos ya existentes.
+            </div>
+        }
+        
+    </div>
+</div>
+
+@code {
+    private CuentaModel nuevaCuenta = new(){ SALDO = 0 };
+    private MonedaModel[] monedas;
+    public bool created = false;
+    public bool Exception = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        monedas = await Http.GetFromJsonAsync<MonedaModel[]>("/api/Monedas");
+    }
+    protected async Task HandleValidSubmit()
+    {
+
+        var response=await Http.PostAsJsonAsync<CuentaModel>( "/api/Cuentas", nuevaCuenta);
+        if (response.StatusCode== System.Net.HttpStatusCode.OK)
+        {
+            Exception = false; 
+            created = true;
+            StateHasChanged();
+            await Task.Delay(3000);
+            nuevaCuenta = new() { SALDO = 0 };
+            created = false;
+            Exception = false;       
+            StateHasChanged();
+
+        }
+        if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+        {
+            Exception = true;
+        }
+
+        
+    } 
+}

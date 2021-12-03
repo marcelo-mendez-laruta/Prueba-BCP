@@ -1,0 +1,9 @@
+﻿CREATE PROCEDURE [dbo].[CrearCuenta]
+	@NRO_CUENTA nvarchar(14),
+	@TIPO char(3),
+	@MONEDA char(3),
+	@NOMBRE nchar(40),
+	@SALDO decimal(12,2)
+AS
+	INSERT INTO [dbo].[Cuenta] (NRO_CUENTA,TIPO,MONEDA,NOMBRE,SALDO) VALUES (@NRO_CUENTA, @TIPO,@MONEDA,@NOMBRE,@SALDO);
+GO

@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="05d8c898-ba09-4a84-8f6f-0db835e22654" ChangeDateTime="12/03/2021 13:32:59">
+    <Property Name="ElementName" Value="[dbo].[Cuenta].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Cuenta]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="NRO_CUENTA" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="cc43ef83-b170-4c62-a262-6854de700d18" ChangeDateTime="12/03/2021 13:38:34">
+    <Property Name="ElementName" Value="[dbo].[Movimiento].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[Movimiento]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="NRO_CUENTA" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="69fe7f53-1aa9-45a9-bd1b-449f1b8ad63b" ChangeDateTime="12/03/2021 14:34:35">
+    <Property Name="ElementName" Value="[bcpdb].[Moneda].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[bcpdb].[Moneda]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="S" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="11ed5ad3-a0db-4ccf-bde6-6534a296b8a7" ChangeDateTime="12/03/2021 14:35:09">
+    <Property Name="ElementName" Value="[bcpdb].[Moneda].[S]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[bcpdb].[Moneda]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Sigla" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c297e4bd-e19b-4452-ab9d-3be0934ec97f" ChangeDateTime="12/03/2021 14:37:26">
+    <Property Name="ElementName" Value="[bcpdb].[Moneda].[Sigla]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[bcpdb].[Moneda]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Simbolo" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="42004570-5c1e-4fe9-bc55-9a5105c511d5" ChangeDateTime="12/03/2021 14:39:20">
+    <Property Name="ElementName" Value="[bcpdb].[Moneda].[Simbolo]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[bcpdb].[Moneda]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Code" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="dcaab4be-3e62-480c-90c1-ee6d3287c5d0" ChangeDateTime="12/03/2021 14:43:43">
+    <Property Name="ElementName" Value="[bcpdb].[Moneda].[Code]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[bcpdb].[Moneda]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Codigo" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e5d11a38-4fb0-4a2d-962a-6193878f8046" ChangeDateTime="12/03/2021 14:46:47">
+    <Property Name="ElementName" Value="[bcpdb].[Tipo_Cambio].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[bcpdb].[Tipo_Cambio]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="Codigo_Base" />
+  </Operation>
+</Operations>
