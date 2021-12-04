@@ -1,6 +1,166 @@
 ﻿@page "/cuentas/transferencias"
-<h3>Transferencias</h3>
+@using Examen_Desarrollo_BCP.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<div class="card m-3">
+    <h4 class="card-header">CUENTA DE ORIGEN</h4>
+    <div class="card-body">
+        <form>
+          <div class="form-group my-3">
+                <label>
+                    Cuenta de Origen
+                </label>
+                <select  class="form-control selectpicker"  @onchange="SetOrigin" >
+                    <option>Seleccione una opcion</option>
+                    @foreach (CuentaModel cuenta in Cuentas)
+                    {
+                        <option value="@cuenta.NRO_CUENTA">@cuenta.NRO_CUENTA</option>
+                    }
+                </select >
+            </div>
+          <div class="form-group my-3">
+                <label>
+                    Saldo
+                </label>
+                @if (CuentaOrigen!=null)
+                {
+                    <input disabled value="@CuentaOrigen.SALDO" type="Number"  class="form-control"/>
+                }
+                else
+                {
+                    <input disabled value="0" type="Number"  class="form-control"/>
+                }
+                
+            </div>
+            <div class="form-group my-3">
+                <label>
+                    Cuenta de Destino
+                </label>
+                <select  class="form-control selectpicker"  @onchange="SetDestination" >
+                    <option>Seleccione una opcion</option>
+                    @foreach (CuentaModel cuenta in Cuentas)
+                    {
+                        <option value="@cuenta.NRO_CUENTA">@cuenta.NRO_CUENTA</option>
+                    }
+                </select >
+            </div>
+            <div class="form-group my-3">
+                <label>
+                    Monto
+                </label>
+                <input value="@Debito.IMPORTE" type="number" class="form-control" @onchange="SetDecimals" min="0.1"/>                
+            </div>
+          <button @onclick="SetTransferencia" class="btn btn-primary">Submit</button>
+        </form>
+        @if (created)
+        {
+            <div class="alert alert-primary my-3" role="alert">
+                Creado.
+            </div>
+        }
+        @if (Exception)
+        {
+            <div class="alert alert-warning my-3" role="alert">
+                Datos ya existentes.
+            </div>
+        }
+        @if (Exception)
+        {
+            <div class="alert alert-warning my-3" role="alert">
+                Datos ya existentes o Informacion incompleta.
+            </div>
+        }
+        @if (Exceeded)
+       {
+           <div class="alert alert-warning my-3" role="alert">
+                Monto excedido.
+            </div>
+       }
+    </div>
+</div>
 
 @code {
+    private CuentaModel[] Cuentas;
+    private CuentaModel CuentaOrigen;
+    private CuentaModel CuentaDestino;
+    private MovimientoModel Abono = new(){ FECHA = DateTime.Now, TIPO="A" };
+    private MovimientoModel Debito = new(){ FECHA = DateTime.Now, TIPO="D" };
+    public bool created = false;
+    public bool Exception = false;
+    public bool Exceeded = false;
 
+    protected override async Task OnInitializedAsync()
+    {
+        Cuentas = await Http.GetFromJsonAsync<CuentaModel[]>("/api/Cuentas");
+    }
+    protected void SetOrigin(ChangeEventArgs e)
+    {
+        var NRO = e.Value.ToString();
+        foreach (CuentaModel cuenta in Cuentas)
+        {
+            if (cuenta.NRO_CUENTA==NRO)
+            {
+                CuentaOrigen = cuenta;
+            }   
+        }
+    }
+    protected void SetDestination(ChangeEventArgs e)
+    {
+        var NRO = e.Value.ToString();
+        foreach (CuentaModel cuenta in Cuentas)
+        {
+            if (cuenta.NRO_CUENTA==NRO)
+            {
+                CuentaDestino = cuenta;
+            }   
+        }
+    }
+    protected void SetDecimals(ChangeEventArgs e)
+    {
+        Debito.IMPORTE = Math.Round(Convert.ToDecimal(e.Value.ToString()), 2);
+        if (CuentaOrigen != null)
+        {
+            if (Debito.IMPORTE>CuentaOrigen.SALDO)
+            {
+                Exceeded = true;
+            }
+        }    
+
+    }
+    protected async Task SetTransferencia()
+    {
+        if (CuentaOrigen != null && CuentaDestino != null)
+        {
+            if (Debito.IMPORTE<=CuentaOrigen.SALDO )
+            {
+                Abono.NRO_CUENTA = CuentaDestino.NRO_CUENTA;
+                Debito.NRO_CUENTA = CuentaOrigen.NRO_CUENTA;
+                Abono.IMPORTE = Debito.IMPORTE;
+                var responseAbono=await Http.PostAsJsonAsync<MovimientoModel>( "/api/movimientos", Abono);
+                var responseDebito=await Http.PostAsJsonAsync<MovimientoModel>( "/api/movimientos", Debito);
+                if (responseAbono.StatusCode== System.Net.HttpStatusCode.OK && responseDebito.StatusCode== System.Net.HttpStatusCode.OK)
+                {
+                    Exception = false;
+                    created = true;
+                    StateHasChanged();
+                    await Task.Delay(500);
+                    NavigationManager.NavigateTo("/cuentas/transferencias", true);
+                }
+                if (responseAbono.StatusCode == System.Net.HttpStatusCode.BadRequest || responseDebito.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    Exception = true;
+                } 
+            }
+            else
+            {
+                Exceeded = true;
+            }
+        }
+        else
+        {
+            Exception = true;
+
+        }
+    }
 }

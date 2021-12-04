@@ -1,0 +1,25 @@
+﻿CREATE PROCEDURE [dbo].[CrearMovimiento]
+	
+	@NRO_CUENTA nvarchar(14),
+	@FECHA datetime,
+	@TIPO char(1),
+	@IMPORTE decimal(12,2)	
+AS
+	DECLARE @SALDO AS decimal(12,2);
+	SET @SALDO =
+		(
+			Select SALDO from [dbo].[Cuenta] where NRO_CUENTA=@NRO_CUENTA
+		)
+	INSERT INTO [dbo].[Movimiento] (NRO_CUENTA,FECHA,TIPO,IMPORTE) VALUES (@NRO_CUENTA, @FECHA,@TIPO,@IMPORTE);
+	
+	IF (@TIPO='A')
+	BEGIN
+		UPDATE [dbo].[Cuenta] SET SALDO=@SALDO+@IMPORTE WHERE NRO_CUENTA=@NRO_CUENTA;
+	END
+ 
+	ELSE
+	BEGIN
+		UPDATE [dbo].[Cuenta] SET SALDO=@SALDO-@IMPORTE WHERE NRO_CUENTA=@NRO_CUENTA;
+	END
+	
+GO

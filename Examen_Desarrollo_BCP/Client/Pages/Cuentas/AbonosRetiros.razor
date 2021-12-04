@@ -1,6 +1,79 @@
 ﻿@page "/cuentas/abonos_retiros"
-<h3>AbonosRetiros</h3>
+@using Examen_Desarrollo_BCP.Shared.Models
+@inject HttpClient Http
+
+<div class="card m-3">
+    <h4 class="card-header">CUENTA</h4>
+    <div class="card-body">
+        <EditForm Model="@nuevoMovimiento" OnValidSubmit="@SetDeposito" class="form-row form">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div class="form-group my-3">
+                    <label>
+                        Cuenta
+                    </label>
+                    <InputSelect  class="form-control selectpicker" @bind-Value="nuevoMovimiento.NRO_CUENTA" >
+                        <option>Seleccione una opcion</option>
+                        @foreach (CuentaModel cuenta in Cuentas)
+                {
+                    <option value="@cuenta.NRO_CUENTA">@cuenta.NRO_CUENTA</option>
+                }
+                    </InputSelect >
+                    <ValidationMessage For="@(() => nuevoMovimiento.NRO_CUENTA)" />
+            </div>
+            <div class="form-group my-3">
+                <label>
+                    Monto
+                </label>
+                <InputNumber  @bind-Value="nuevoMovimiento.IMPORTE" type="Number" placeholder="Nombre" class="form-control"/>
+                <ValidationMessage For="@(() => nuevoMovimiento.IMPORTE)" />
+            </div>
+            <button class="btn btn-primary" type="submit" @onclick="@(()=> nuevoMovimiento.TIPO = "A")">Deposito</button>
+            <button  class="btn btn-primary" type="submit" @onclick="@(()=> nuevoMovimiento.TIPO = "D")">Retiro</button>
+        </EditForm>
+        @if (created)
+        {
+            <div class="alert alert-primary my-3" role="alert">
+                Creado.
+            </div>
+        }
+        @if (Exception)
+        {
+            <div class="alert alert-warning my-3" role="alert">
+                Datos ya existentes.
+            </div>
+        }
+    </div>
+</div>
 
 @code {
+    private CuentaModel[] Cuentas;
+    private MovimientoModel nuevoMovimiento = new(){ FECHA = DateTime.Now, TIPO="A" };
+    public bool created = false;
+    public bool Exception = false;
 
+
+    protected override async Task OnInitializedAsync()
+    {
+        Cuentas = await Http.GetFromJsonAsync<CuentaModel[]>("/api/Cuentas");
+    }
+    protected async Task SetDeposito()
+    {
+        var response=await Http.PostAsJsonAsync<MovimientoModel>( "/api/movimientos", nuevoMovimiento);
+        if (response.StatusCode== System.Net.HttpStatusCode.OK)
+        {
+            Exception = false; 
+            created = true;
+            StateHasChanged();
+            await Task.Delay(500);
+            nuevoMovimiento = new(){ FECHA = DateTime.Now };
+            created = false;
+            Exception = false;       
+            StateHasChanged();
+        }
+        if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+        {
+            Exception = true;
+        }        
+    }
 }

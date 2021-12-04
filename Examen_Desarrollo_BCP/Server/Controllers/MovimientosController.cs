@@ -1,12 +1,13 @@
 ﻿using Examen_Desarrollo_BCP.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Data.SqlClient;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Examen_Desarrollo_BCP.Server.Controllers
 {
-    [Route("api/Movimientos")]
+    [Route("api/[controller]")]
     [ApiController]
     public class MovimientosController : ControllerBase
     {
@@ -36,7 +37,7 @@ namespace Examen_Desarrollo_BCP.Server.Controllers
                     {
                         NRO_CUENTA = Convert.ToString(sdr["NRO_CUENTA"]),
                         TIPO = Convert.ToString(sdr["TIPO"]),
-                        FECHA = DateTime.Parse((string)sdr["MONEDA"]),
+                        FECHA = (DateTime)sdr["FECHA"],
                         IMPORTE = Math.Round(Convert.ToDecimal(sdr["IMPORTE"]), 2),
                     });
                 }
@@ -47,8 +48,34 @@ namespace Examen_Desarrollo_BCP.Server.Controllers
 
         // POST api/<MovimientosController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public ActionResult<MovimientoModel> Post(MovimientoModel NuevoMovimiento)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            using SqlConnection connection = new(constr);
+            connection.Open();
+            using SqlCommand cmd = new SqlCommand("CrearMovimiento", connection);
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@NRO_CUENTA", NuevoMovimiento.NRO_CUENTA);
+            cmd.Parameters.AddWithValue("@TIPO", NuevoMovimiento.TIPO);
+            cmd.Parameters.AddWithValue("@FECHA", NuevoMovimiento.FECHA);
+            cmd.Parameters.AddWithValue("@IMPORTE", NuevoMovimiento.IMPORTE);
+            try
+            {
+                using IDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    Console.WriteLine(reader["NRO_CUENTA"] + " " + reader["NOMBRE"]);
+                }
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
         }
 
         // PUT api/<MovimientosController>/5

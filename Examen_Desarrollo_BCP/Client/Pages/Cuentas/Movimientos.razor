@@ -44,7 +44,15 @@
                     {
                         <tr>
                           <td>@movimiento.FECHA</td>
-                          <td>@movimiento.TIPO</td>
+                          @if (@movimiento.TIPO=="A")
+                         {
+                                <td>Abono</td>
+                            }
+                            else
+                            {
+                                <td>Debito</td>
+                            }
+
                           <td>@movimiento.IMPORTE</td>
                         </tr>
                     }
