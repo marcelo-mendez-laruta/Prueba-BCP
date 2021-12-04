@@ -1,7 +1,77 @@
 ﻿@page "/cuentas/movimientos/{NRO_CUENTA}"
-<h3>Movimientos</h3>
-
+@using Examen_Desarrollo_BCP.Shared.Models
+@inject HttpClient Http
+<div class="card m-3">
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <p><strong>Cuenta:</strong></p>
+                <p>@Cuenta.NRO_CUENTA</p>
+            </div>
+            <div class="col">
+                <p><strong>Nombre:</strong></p>
+                <p> @Cuenta.NOMBRE</p>
+            </div>
+            <div class="col">
+                <p><strong>Tipo:</strong></p>
+                <p>@Cuenta.TIPO</p>
+            </div>
+            <div class="col">
+                <p><strong>Moneda:</strong></p>
+                <p>@Cuenta.MONEDA</p>
+            </div>
+            <div class="col">
+                <p><strong>Saldo</strong>:</p>
+                <p>@Cuenta.SALDO</p>
+            </div>
+        </div>
+    </div>
+</div>
+@if (movimientos.Length > 0)
+{
+    <div class="card m-3">
+        <div class="card-body">
+             <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th scope="col">FECHA</th>
+                  <th scope="col">TIPO</th>
+                  <th scope="col">IMPORTE</th>              
+                </tr>
+              </thead>
+              <tbody>
+                  @foreach (MovimientoModel movimiento in movimientos)
+                    {
+                        <tr>
+                          <td>@movimiento.FECHA</td>
+                          <td>@movimiento.TIPO</td>
+                          <td>@movimiento.IMPORTE</td>
+                        </tr>
+                    }
+              </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card m-3">
+        <div class="card-body">
+            <p>Esta cuenta aun no tiene movimientos</p>
+        </div>
+    </div>
+}
 @code {
     [Parameter]
     public string? NRO_CUENTA { get; set; }
+    private CuentaModel Cuenta;
+    private MovimientoModel[] movimientos;
+    protected override async Task OnInitializedAsync()
+    {
+        var link1 = "/api/Cuentas/" + NRO_CUENTA;
+        var link2 = "/api/movimientos/" + NRO_CUENTA;
+
+        Cuenta = await Http.GetFromJsonAsync<CuentaModel>(link1);        
+        movimientos=await Http.GetFromJsonAsync<MovimientoModel[]>(link2);
+    }
 }

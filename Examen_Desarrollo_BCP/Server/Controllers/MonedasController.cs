@@ -4,7 +4,7 @@ using Examen_Desarrollo_BCP.Shared.Models;
 using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 
-namespace Examen_Desarrollo_BCP.Server.Controllers.Cuentas
+namespace Examen_Desarrollo_BCP.Server.Controllers
 {
     
     [ApiController]

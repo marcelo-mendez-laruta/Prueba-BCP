@@ -1,0 +1,5 @@
+﻿CREATE PROCEDURE [dbo].[ObtenerCuenta]
+	@NRO_CUENTA nvarchar(14)
+AS
+	SELECT * FROM [dbo].[Cuenta] WHERE NRO_CUENTA=@NRO_CUENTA
+GO
