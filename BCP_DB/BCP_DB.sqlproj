@@ -60,7 +60,6 @@
     <Folder Include="Properties" />
     <Folder Include="Tables" />
     <Folder Include="Stored Procedures" />
-    <Folder Include="Stored Procedures\Moneda" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Cuenta.sql" />
@@ -68,8 +67,9 @@
     <Build Include="Tables\Moneda.sql" />
     <Build Include="Tables\Tipo_Cambio.sql" />
     <PostDeploy Include="PopulateDB.sql" />
-    <Build Include="Stored Procedures\Moneda\ListaMonedas.sql" />
-    <Build Include="Stored Procedures\Moneda\CrearCuenta.sql" />
+    <Build Include="Stored Procedures\CrearCuenta.sql" />
+    <Build Include="Stored Procedures\ListaMonedas.sql" />
+    <Build Include="Stored Procedures\ListaCuentas.sql" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="BCP_DB.refactorlog" />

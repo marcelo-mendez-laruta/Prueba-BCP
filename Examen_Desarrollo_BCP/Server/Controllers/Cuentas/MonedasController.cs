@@ -6,12 +6,14 @@ using Microsoft.Extensions.Configuration;
 
 namespace Examen_Desarrollo_BCP.Server.Controllers.Cuentas
 {
+    
     [ApiController]
     [Route("api/[controller]")]
     public class MonedasController : Controller
     {
-        private string constr = "Data Source=host.docker.internal,1433;Initial Catalog=bcpdb;User ID=sa;Password=bcp12345";
+        readonly string constr = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["BCP_Connection"];
         // GET: MonedasController
+        [HttpGet]
         public ActionResult<IEnumerable<MonedaModel>> Index()
         {
 

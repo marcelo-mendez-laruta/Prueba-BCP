@@ -7,16 +7,41 @@ using System.Data;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Examen_Desarrollo_BCP.Server.Controllers.Cuentas
-{
+{ 
+
     [Route("api/[controller]")]
     [ApiController]
     public class CuentasController : ControllerBase
     {
+        readonly string constr = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["BCP_Connection"];
         // GET: api/<CuentasController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public ActionResult<IEnumerable<CuentaModel>> Get()
         {
-            return new string[] { "value1", "value2" };
+            List<CuentaModel> cuentas = new();
+            using (SqlConnection con = new(constr))
+            {
+                using SqlCommand cmd = new("ListaCuentas", con);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                con.Open();
+                using (SqlDataReader sdr = cmd.ExecuteReader())
+                {
+                    while (sdr.Read())
+                    {
+                        cuentas.Add(new CuentaModel
+                        {
+                            NRO_CUENTA = Convert.ToString(sdr["NRO_CUENTA"]),
+                            TIPO = Convert.ToString(sdr["TIPO"]),
+                            MONEDA = Convert.ToString(sdr["MONEDA"]),
+                            NOMBRE = Convert.ToString(sdr["NOMBRE"]),
+                            SALDO= Math.Round(Convert.ToDecimal(sdr["SALDO"]), 2),
+                        });
+                    }
+                }
+                con.Close();
+            }
+
+            return cuentas;
         }
 
         // GET api/<CuentasController>/5
@@ -30,7 +55,7 @@ namespace Examen_Desarrollo_BCP.Server.Controllers.Cuentas
         [HttpPost]
         public ActionResult<CuentaModel> Post(CuentaModel NuevaCuenta)
         {
-            var constr = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build().GetSection("ConnectionStrings")["BCP_Connection"];
+            
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -57,13 +82,8 @@ namespace Examen_Desarrollo_BCP.Server.Controllers.Cuentas
                 catch (Exception e)
                 {
                     return BadRequest();
-                }
-
-                
-                
+                }               
             }
-
-
             return Ok();
         }
 

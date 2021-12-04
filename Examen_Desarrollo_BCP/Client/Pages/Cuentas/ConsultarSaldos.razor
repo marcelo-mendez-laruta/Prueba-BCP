@@ -1,6 +1,48 @@
 ﻿@page "/cuentas/saldos"
-<h3>ConsultarSaldos</h3>
+@using Examen_Desarrollo_BCP.Shared.Models
+@using System.Text.Json
+@inject HttpClient Http
+
+<div class="card m-3">
+    <h4 class="card-header">Cuentas Registradas</h4>
+    <div class="card-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">TIPO</th>
+              <th scope="col">MONEDA</th>
+              <th scope="col">CUENTA</th>
+              <th scope="col">TITULAR</th>
+              <th scope="col">SALDO</th>
+              <th scope="col">Movimientos</th>
+            </tr>
+          </thead>
+          <tbody>
+              @foreach (CuentaModel cuenta in Cuentas)
+                {
+                    var link = "/cuentas/movimientos/" + cuenta.NRO_CUENTA;
+                    <tr>
+                        <th scope="row">@cuenta.TIPO</th>
+                      <td>@cuenta.MONEDA</td>
+                      <td>@cuenta.NRO_CUENTA</td>
+                      <td>@cuenta.NOMBRE</td>
+                      <td>@cuenta.SALDO</td>
+                      <td>
+                        <NavLink class="nav-link" href="@link">
+                            <span class="oi oi-list" aria-hidden="true"></span>
+                        </NavLink>
+                      </td>
+                    </tr>
+                }
+          </tbody>
+        </table>
+    </div>
+</div>
 
 @code {
-
+    private CuentaModel[] Cuentas;
+    protected override async Task OnInitializedAsync()
+    {
+        Cuentas = await Http.GetFromJsonAsync<CuentaModel[]>("/api/Cuentas");
+    }
 }
